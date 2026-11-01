@@ -1,0 +1,30 @@
+name: BlockerHero Guard
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: blockerhero-guard
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run guard
+        run: python3 reject_guard.py
+        env:
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          GUARD_TZ: ${{ vars.GUARD_TZ }}
+          GUARD_ALLOW_WINDOWS: ${{ vars.GUARD_ALLOW_WINDOWS }}
+          GUARD_DRY_RUN: ${{ vars.GUARD_DRY_RUN }}
